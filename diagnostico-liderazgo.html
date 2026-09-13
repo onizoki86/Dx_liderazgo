@@ -97,7 +97,8 @@
     <div class="nombre-section">
       <h3>¡Ya terminaste! Una última cosa</h3>
       <p>Escribe tu nombre para registrar tu resultado y continuar a tu perfil.</p>
-      <input class="nombre-input" id="nombre-input" type="text" placeholder="Tu nombre completo" maxlength="80"/>
+      <input class="nombre-input" id="nombre-input" type="text" placeholder="Tu nombre completo" maxlength="80" style="margin-bottom:10px"/>
+      <input class="nombre-input" id="cargo-input" type="text" placeholder="Tu cargo" maxlength="80"/>
       <div class="nombre-wrap">
         <button class="btn btn-p" id="btn-ver" onclick="verResultado()">Ver mi perfil →</button>
       </div>
@@ -217,13 +218,14 @@ function next(){
 
 function verResultado(){
   const nombre=document.getElementById('nombre-input').value.trim();
+  const cargo=document.getElementById('cargo-input').value.trim();
   if(!nombre){
     document.getElementById('nombre-input').style.borderColor='#E24B4A';
     document.getElementById('nombre-input').placeholder='Por favor escribe tu nombre';
     return;
   }
   document.getElementById('nombre-section').style.display='none';
-  showResult(nombre);
+  showResult(nombre, cargo);
 }
 
 // Permitir Enter en el input
@@ -232,42 +234,50 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(inp) inp.addEventListener('keydown',e=>{if(e.key==='Enter')verResultado();});
 });
 
-function enviarASheets(data){
-  try {
-    const params = new URLSearchParams({
-      nombre: data.nombre,
-      tendencia: data.tendencia,
-      segundo: data.segundo,
-      direccion: data.direccion,
-      coaching: data.coaching,
-      apoyo: data.apoyo,
-      delegacion: data.delegacion
-    });
-    const url = SHEETS_URL + '?' + params.toString();
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = url;
-    document.body.appendChild(iframe);
-    setTimeout(() => document.body.removeChild(iframe), 5000);
-  } catch(err) {}
+const FORM_BASE = "https://docs.google.com/forms/d/e/1FAIpQLSfeIztEI745YzA5bRu-pQUnRnJ7Nl39YYmEzbUX8vHNLksQvA/viewform";
+const ENTRY = {
+  nombre:    "entry.2005620554",
+  cargo:     "entry.1045781291",
+  tendencia: "entry.1065046570",
+  segundo:   "entry.1166974658",
+  direccion: "entry.567656598",
+  coaching:  "entry.1551997367",
+  apoyo:     "entry.110548048",
+  delegacion:"entry.440774021"
+  // entry.839337160 = comentarios, lo deja vacío para que el líder lo llene
+};
+
+function generarLinkForm(data){
+  const params = new URLSearchParams({
+    [ENTRY.nombre]:    data.nombre,
+    [ENTRY.cargo]:     data.cargo,
+    [ENTRY.tendencia]: data.tendencia,
+    [ENTRY.segundo]:   data.segundo,
+    [ENTRY.direccion]: data.direccion,
+    [ENTRY.coaching]:  data.coaching,
+    [ENTRY.apoyo]:     data.apoyo,
+    [ENTRY.delegacion]:data.delegacion,
+    usp: "pp_url"
+  });
+  return FORM_BASE + "?" + params.toString();
 }
 
-function showResult(nombre){
+function showResult(nombre, cargo){
   const counts=resultCounts;
   const sorted=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
   const primary=sorted[0],secondary=sorted[1];
   const p=PERFILES[primary];
   const max=Math.max(...Object.values(counts));
 
-  // Enviar a Sheets
-  enviarASheets({
-    nombre:nombre,
-    tendencia:NOMBRES[primary],
-    segundo:NOMBRES[secondary],
-    direccion:counts.D,
-    coaching:counts.C,
-    apoyo:counts.A,
-    delegacion:counts.G
+  const formLink = generarLinkForm({
+    nombre: nombre,
+    cargo: cargo || "",
+    tendencia: NOMBRES[primary],
+    segundo: NOMBRES[secondary],
+    direccion: counts.D,
+    coaching: counts.C,
+    apoyo: counts.A,
+    delegacion: counts.G
   });
 
   const rs=document.getElementById('result-section');
@@ -315,6 +325,10 @@ function showResult(nombre){
     </div>
     <div class="disclaimer">
       <p>Este resultado no es una etiqueta ni una evaluación de desempeño. Es una fotografía de tus tendencias frente a diferentes situaciones de liderazgo. Tu segundo estilo más frecuente es <strong>${NOMBRES[secondary]}</strong> — los líderes más efectivos combinan varios estilos según el contexto y las necesidades del equipo.</p>
+    </div>
+    <div style="text-align:center;margin-top:1.5rem;margin-bottom:1rem">
+      <a href="${formLink}" target="_blank" style="display:inline-block;background:#1D9E75;color:#fff;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:500;text-decoration:none">Registrar mi resultado →</a>
+      <p style="font-size:12px;color:#888;margin-top:8px">Tus datos ya están prellenados. Solo agrega un comentario si quieres y envía.</p>
     </div>
     <div class="restart-row">
       <button class="btn" onclick="restart()">Responder de nuevo</button>
