@@ -168,11 +168,6 @@ const COLORS={D:"#E24B4A",C:"#534AB7",A:"#1D9E75",G:"#BA7517"};
 const LETTERS=["A","B","C","D"];
 
 let cur=0,ans=new Array(20).fill(null),resultCounts=null;
-let shuffled=Qs.map(q=>{
-  const idx=[0,1,2,3].sort(()=>Math.random()-.5);
-  const ol=["A","B","C","D"];
-  return idx.map(i=>({txt:q.opts[i],origKey:ol[i]}));
-});
 
 function startQuiz(){
   document.getElementById('intro-section').style.display='none';
@@ -181,11 +176,11 @@ function startQuiz(){
 }
 
 function render(){
-  const opts=shuffled[cur];
+  const q=Qs[cur];
   document.getElementById('qnum').textContent='Situación '+(cur+1)+' de 20';
-  document.getElementById('qtext').textContent=Qs[cur].text;
-  document.getElementById('qopts').innerHTML=opts.map((o,i)=>
-    `<button class="opt${ans[cur]===i?' sel':''}" onclick="sel(${i},this)"><span class="opt-letter">${LETTERS[i]}.</span>${o.txt}</button>`
+  document.getElementById('qtext').textContent=q.text;
+  document.getElementById('qopts').innerHTML=q.opts.map((txt,i)=>
+    `<button class="opt${ans[cur]===i?' sel':''}" onclick="sel(${i},this)"><span class="opt-letter">${LETTERS[i]}.</span>${txt}</button>`
   ).join('');
   const pct=Math.round((cur/20)*100);
   document.getElementById('pfill').style.width=pct+'%';
@@ -211,7 +206,7 @@ function next(){
     // calcular resultado y pedir nombre
     const counts={D:0,C:0,A:0,G:0};
     ans.forEach((a,i)=>{
-      if(a!==null){const ok=shuffled[i][a].origKey;counts[KEY[i][ok]]++;}
+      if(a!==null){const ok=LETTERS[a];counts[KEY[i][ok]]++;}
     });
     resultCounts=counts;
     document.getElementById('quiz-section').style.display='none';
@@ -329,7 +324,6 @@ function showResult(nombre){
 
 function restart(){
   cur=0;ans=new Array(20).fill(null);resultCounts=null;
-  shuffled=Qs.map(q=>{const idx=[0,1,2,3].sort(()=>Math.random()-.5);const ol=["A","B","C","D"];return idx.map(i=>({txt:q.opts[i],origKey:ol[i]}));});
   document.getElementById('result-section').style.display='none';
   document.getElementById('nombre-section').style.display='none';
   document.getElementById('quiz-section').style.display='block';
