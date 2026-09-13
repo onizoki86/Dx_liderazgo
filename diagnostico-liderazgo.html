@@ -249,7 +249,8 @@ function enviarASheets(data){
       delegacion: data.delegacion
     });
     const url = SHEETS_URL + '?' + params.toString();
-    fetch(url, {method:'GET', mode:'no-cors'}).catch(()=>{});
+    const img = new Image();
+    img.src = url;
   } catch(err) {}
 }
 
