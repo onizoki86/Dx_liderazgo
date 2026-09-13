@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico de Tendencias de Liderazgo</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f3;min-height:100vh;padding:2rem 1rem;color:#1a1a1a}
+  #app{max-width:680px;margin:0 auto}
+  .header{margin-bottom:1.5rem;text-align:center}
+  .header h1{font-size:22px;font-weight:600;color:#1a1a1a;margin-bottom:6px}
+  .logo-bar{text-align:center;margin-bottom:2rem}
+  .logo-bar span{font-size:13px;color:#999;letter-spacing:.04em;text-transform:uppercase}
+  .intro-box{background:#fff;border-radius:14px;border:1px solid #e8e8e6;padding:1.5rem;margin-bottom:1.5rem}
+  .intro-box p{font-size:14px;color:#444;line-height:1.8;margin-bottom:8px}
+  .intro-box p:last-child{margin-bottom:0}
+  .intro-box .time-note{font-size:12px;color:#999;margin-top:12px}
+  .start-wrap{text-align:center;margin-top:1.5rem}
+  .progress-wrap{height:5px;background:#e8e8e6;border-radius:5px;margin-bottom:8px}
+  .progress-fill{height:5px;background:#1D9E75;border-radius:5px;transition:width .4s ease}
+  .progress-label{font-size:12px;color:#888;margin-bottom:1.25rem}
+  .q-card{background:#fff;border:1px solid #e8e8e6;border-radius:14px;padding:1.75rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .q-num{font-size:12px;color:#1D9E75;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+  .q-text{font-size:16px;font-weight:500;color:#1a1a1a;line-height:1.65;margin-bottom:1.5rem}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{background:#f9f9f7;border:1px solid #e0e0dc;border-radius:10px;padding:13px 16px;text-align:left;cursor:pointer;font-size:14px;color:#333;line-height:1.55;transition:all .15s;width:100%}
+  .opt:hover{background:#E1F5EE;border-color:#1D9E75}
+  .opt.sel{background:#E1F5EE;border-color:#1D9E75;color:#04342C}
+  .opt-letter{font-weight:600;color:#1D9E75;margin-right:8px}
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.25rem}
+  .btn{border:1px solid #d0d0cc;background:#fff;border-radius:10px;padding:11px 22px;font-size:14px;cursor:pointer;color:#333;transition:all .15s;font-family:inherit}
+  .btn:hover{background:#f5f5f3}
+  .btn-p{background:#1D9E75;color:#fff;border-color:#1D9E75;font-weight:500}
+  .btn-p:hover{background:#085041;border-color:#085041}
+  .btn:disabled{opacity:.35;cursor:default}
+  .nombre-section{background:#fff;border:1px solid #e8e8e6;border-radius:14px;padding:1.75rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .nombre-section h3{font-size:17px;font-weight:600;color:#1a1a1a;margin-bottom:8px}
+  .nombre-section p{font-size:14px;color:#666;margin-bottom:1.25rem;line-height:1.6}
+  .nombre-input{width:100%;padding:12px 16px;border:1px solid #d0d0cc;border-radius:10px;font-size:15px;font-family:inherit;color:#1a1a1a;outline:none;transition:border .15s}
+  .nombre-input:focus{border-color:#1D9E75}
+  .nombre-wrap{text-align:center;margin-top:1.25rem}
+  .result{animation:fi .5s ease}
+  @keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .r-header{text-align:center;background:#fff;border:1px solid #e8e8e6;border-radius:14px;padding:2.5rem 2rem 2rem;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .r-badge{display:inline-block;background:#E1F5EE;color:#04342C;font-size:12px;font-weight:600;padding:5px 16px;border-radius:20px;margin-bottom:14px;letter-spacing:.04em;text-transform:uppercase}
+  .r-name{font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:8px}
+  .r-tag{font-size:15px;color:#666;line-height:1.6}
+  .r-card{background:#fff;border:1px solid #e8e8e6;border-radius:14px;padding:1.5rem;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .r-card-label{font-size:11px;color:#1D9E75;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:12px}
+  .r-card-text{font-size:14px;color:#333;line-height:1.8}
+  .bars{display:flex;flex-direction:column;gap:12px}
+  .bar-row{display:flex;align-items:center;gap:12px}
+  .bar-name{font-size:13px;color:#555;width:150px;flex-shrink:0}
+  .bar-bg{flex:1;height:10px;background:#f0f0ee;border-radius:5px}
+  .bar-fg{height:10px;border-radius:5px;transition:width .8s ease}
+  .bar-val{font-size:14px;font-weight:600;color:#1a1a1a;width:24px;text-align:right;flex-shrink:0}
+  .qs-reflexion{display:flex;flex-direction:column;gap:10px}
+  .q-ref{font-size:14px;color:#333;line-height:1.7;padding:10px 14px;background:#f9f9f7;border-radius:8px;border-left:3px solid #1D9E75}
+  .disclaimer{background:#E1F5EE;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:12px}
+  .disclaimer p{font-size:13px;color:#04342C;line-height:1.8}
+  .enviando{text-align:center;padding:1rem;font-size:14px;color:#888}
+  .restart-row{text-align:center;margin-top:1.5rem;padding-bottom:2rem}
+  @media(max-width:480px){.bar-name{width:110px;font-size:12px}.q-text{font-size:15px}.r-name{font-size:22px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="logo-bar"><span>Capacitación de Liderazgo</span></div>
+
+  <div id="intro-section">
+    <div class="header"><h1>Autodiagnóstico de tendencias de liderazgo</h1></div>
+    <div class="intro-box">
+      <p>A continuación encontrarás <strong>20 situaciones</strong> que pueden ocurrir en la vida cotidiana de un equipo de trabajo.</p>
+      <p>En cada situación, selecciona la respuesta que más se parece a lo que <strong>realmente harías</strong>, no necesariamente a lo que consideras que sería la respuesta ideal.</p>
+      <p>No hay respuestas buenas o malas. El propósito es reconocer tus tendencias actuales de liderazgo y reflexionar sobre cuándo puede ser útil ajustarlas.</p>
+      <p class="time-note">Tiempo estimado: 8–10 minutos.</p>
+    </div>
+    <div class="start-wrap"><button class="btn btn-p" onclick="startQuiz()">Comenzar el diagnóstico →</button></div>
+  </div>
+
+  <div id="quiz-section" style="display:none">
+    <div class="progress-wrap"><div class="progress-fill" id="pfill" style="width:0%"></div></div>
+    <div class="progress-label" id="plabel">Pregunta 1 de 20</div>
+    <div class="q-card">
+      <div class="q-num" id="qnum"></div>
+      <div class="q-text" id="qtext"></div>
+      <div class="opts" id="qopts"></div>
+    </div>
+    <div class="nav">
+      <button class="btn" id="bprev" onclick="prev()" disabled>← Anterior</button>
+      <button class="btn btn-p" id="bnext" onclick="next()" disabled>Siguiente →</button>
+    </div>
+  </div>
+
+  <div id="nombre-section" style="display:none">
+    <div class="nombre-section">
+      <h3>¡Ya terminaste! Una última cosa</h3>
+      <p>Escribe tu nombre para registrar tu resultado y continuar a tu perfil.</p>
+      <input class="nombre-input" id="nombre-input" type="text" placeholder="Tu nombre completo" maxlength="80"/>
+      <div class="nombre-wrap">
+        <button class="btn btn-p" id="btn-ver" onclick="verResultado()">Ver mi perfil →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="result-section" style="display:none"></div>
+</div>
+
+<script>
+const SHEETS_URL="https://script.google.com/macros/s/AKfycbye9yyKqn9EGdz-LJ4UcP_ZGT9v2azDFVWEArt4NROncayo2m6hhKOX9xWJM5GZ4MbA/exec";
+
+const KEY=[
+  {A:"D",B:"C",C:"A",D:"G"},
+  {A:"C",B:"A",C:"G",D:"D"},
+  {A:"A",B:"G",C:"D",D:"C"},
+  {A:"A",B:"G",C:"D",D:"C"},
+  {A:"D",B:"A",C:"C",D:"G"},
+  {A:"D",B:"C",C:"A",D:"G"},
+  {A:"A",B:"G",C:"D",D:"C"},
+  {A:"D",B:"C",C:"A",D:"G"},
+  {A:"D",B:"C",C:"A",D:"G"},
+  {A:"C",B:"A",C:"D",D:"G"},
+  {A:"C",B:"A",C:"D",D:"G"},
+  {A:"A",B:"D",C:"C",D:"G"},
+  {A:"C",B:"A",C:"D",D:"G"},
+  {A:"G",B:"A",C:"C",D:"D"},
+  {A:"D",B:"C",C:"A",D:"G"},
+  {A:"A",B:"D",C:"G",D:"C"},
+  {A:"A",B:"G",C:"D",D:"C"},
+  {A:"D",B:"C",C:"A",D:"G"},
+  {A:"A",B:"G",C:"D",D:"C"},
+  {A:"C",B:"A",C:"G",D:"D"}
+];
+
+const Qs=[
+  {text:"Un colaborador nuevo acaba de ingresar al equipo y debe comenzar una tarea que todavía no conoce bien. ¿Qué harías?",opts:["Le explico claramente qué debe hacer, cómo hacerlo y qué espero de su trabajo.","Le explico la tarea, revisamos juntos posibles dificultades y le doy retroalimentación durante el proceso.","Le pregunto cómo piensa abordar la tarea y acordamos qué apoyo necesita.","Le asigno la tarea y le doy libertad para organizar la manera de realizarla, acordando revisar el resultado."]},
+  {text:"Un colaborador con experiencia comete un error importante que afecta el resultado del equipo. ¿Cuál sería tu primera reacción?",opts:["Aprovecho el error para revisar con él qué aprendió, qué alternativas tenía y cómo puede mejorar.","Converso con él para entender qué ocurrió, escucho su perspectiva y buscamos juntos cómo corregirlo.","Le pido que corrija la situación y analice por sí mismo cómo evitar que vuelva a presentarse.","Le indico con claridad qué debe corregir y establezco un seguimiento cercano para evitar que vuelva a ocurrir."]},
+  {text:"Se anuncia un cambio en un proceso y notas resistencia en parte del equipo. ¿Cómo actuarías?",opts:["Abro un espacio para escuchar las preocupaciones del equipo y construir alternativas cuando sea posible.","Comunico el cambio y dejo que el equipo encuentre la mejor manera de adaptarse, interviniendo cuando sea necesario.","Explico claramente qué va a cambiar, por qué y qué se espera de cada persona.","Acompaño de cerca al equipo durante la transición, resolviendo dudas y reforzando los nuevos comportamientos."]},
+  {text:"Dos integrantes de tu equipo tienen un conflicto que empieza a afectar el trabajo. ¿Qué harías?",opts:["Escucho a ambas partes y facilito una conversación para que encuentren acuerdos.","Les pido que intenten resolver directamente el conflicto y les hago seguimiento al resultado.","Les indico claramente qué comportamiento espero y qué deben hacer para resolver la situación.","Converso con ellos sobre lo ocurrido, ayudo a analizar alternativas y acompaño la construcción de un acuerdo."]},
+  {text:"Una persona con mucha experiencia en el proceso recibe una nueva responsabilidad. ¿Cómo la acompañarías?",opts:["Le explico detalladamente lo que debe hacer y establezco controles frecuentes al inicio.","Le pregunto cómo piensa asumir la responsabilidad, qué necesita y qué alternativas considera.","Revisamos juntos el nuevo reto, identificamos posibles dificultades y acordamos cómo acompañarlo.","Le doy autonomía para organizarse y acordamos únicamente los resultados y momentos de seguimiento."]},
+  {text:"El equipo está bajo mucha presión porque debe cumplir una fecha límite importante. ¿Cuál sería tu comportamiento más probable?",opts:["Tomo una posición más directiva: priorizo tareas, asigno responsabilidades y establezco tiempos claros.","Acompaño de cerca la ejecución, revisando avances, resolviendo dificultades y dando retroalimentación.","Pregunto al equipo cómo propone organizarse y facilito que ellos definan la mejor estrategia.","Confío en que el equipo puede organizarse y me mantengo disponible si requieren apoyo."]},
+  {text:"Un colaborador propone una forma diferente de hacer un proceso. ¿Cómo responderías?",opts:["Le doy espacio para desarrollar la idea y facilito la participación de otros integrantes del equipo.","Le pido que desarrolle la propuesta y la implemente, acordando revisar posteriormente los resultados.","Le indico los criterios que debe cumplir la propuesta y establezco cómo y cuándo debe presentarme los avances.","Le pregunto por qué considera que funcionaría, analizamos juntos ventajas y riesgos y definimos cómo probarla."]},
+  {text:"Notas que el desempeño de un colaborador ha disminuido durante las últimas semanas. ¿Qué harías?",opts:["Defino con claridad qué resultados debe recuperar y establezco un seguimiento más frecuente.","Le pregunto qué considera que está afectando su desempeño y qué necesita para retomar el ritmo.","Converso con él para comprender qué está ocurriendo, escucho sus dificultades y acordamos acciones.","Le doy espacio para identificar y resolver la situación, manteniendo una revisión sobre los resultados."]},
+  {text:"Debes tomar una decisión que tendrá impacto directo en el equipo. ¿Qué harías?",opts:["Tomo la decisión considerando las necesidades del proceso y comunico claramente qué se hará.","Explico el contexto, escucho sus opiniones y acompaño al equipo en la comprensión de las implicaciones.","Consulto al equipo, escucho diferentes puntos de vista y construyo la decisión con ellos cuando sea viable.","Delego la definición de la alternativa al equipo cuando considero que cuenta con la experiencia suficiente."]},
+  {text:"Te das cuenta de que algunos colaboradores recurren a ti constantemente para tomar decisiones que podrían tomar por sí mismos. ¿Qué harías?",opts:["Les pregunto qué alternativas han considerado y los ayudo a desarrollar criterio para decidir.","Genero un espacio para escuchar qué les está dificultando decidir y acordamos cómo fortalecer su autonomía.","Les indico qué decisiones pueden tomar directamente y cuáles requieren mi intervención.","Les digo que asuman esas decisiones y dejo claro que confío en su capacidad para hacerlo."]},
+  {text:"Debes asignar una tarea crítica a un colaborador que tiene poca experiencia en ella. ¿Cómo actuarías?",opts:["Le explico el objetivo, conversamos sobre cómo piensa abordarlo y acordamos puntos de acompañamiento.","Lo involucro en la planificación, escucho sus dudas y lo acompaño mientras desarrolla la tarea.","Le asigno la tarea, explico claramente los pasos y hago seguimiento frecuente.","Le doy la oportunidad de asumirla con autonomía y revisamos el resultado al finalizar."]},
+  {text:"Un proyecto liderado por tu equipo obtiene resultados inferiores a los esperados. ¿Qué haces primero?",opts:["Reviso con el equipo qué ocurrió, escucho diferentes perspectivas y facilitamos la búsqueda de soluciones.","Defino las acciones correctivas prioritarias y asigno responsables y fechas de seguimiento.","Analizo los resultados con el equipo, identificamos aprendizajes y definimos juntos cómo mejorar.","Pido al equipo que analice los resultados y proponga las acciones que considera necesarias."]},
+  {text:"Identificas a un colaborador con alto potencial al que quieres preparar para un reto mayor. ¿Qué harías?",opts:["Converso sobre sus fortalezas, exploramos qué necesita desarrollar y lo acompaño durante el reto.","Le planteo el reto, escucho cómo quiere asumirlo y acordamos juntos el nivel de apoyo que necesitará.","Le explico claramente las nuevas responsabilidades y los estándares que deberá cumplir.","Le asigno el nuevo reto y le doy autonomía, manteniendo seguimiento sobre los resultados."]},
+  {text:"Un colaborador cuestiona una decisión que tomaste frente al equipo. ¿Cómo responderías?",opts:["Le pregunto qué alternativa propone y, si tiene sentido, le doy espacio para desarrollarla.","Escucho sus argumentos, explico el razonamiento de mi decisión y buscamos comprender los diferentes puntos de vista.","Converso con él sobre sus argumentos y aprovecho la situación para explicarle los criterios que utilizamos para decidir.","Le indico que la decisión está tomada y aclaro lo que debe hacer a partir de ese momento."]},
+  {text:"Percibes que un colaborador está desmotivado y su actitud empieza a afectar al equipo. ¿Qué harías?",opts:["Le explico claramente qué comportamientos están afectando al equipo y qué espero de él.","Exploro con él las causas de la situación, doy retroalimentación y lo acompaño en la recuperación.","Converso con él para entender qué está pasando, escucho sus necesidades y acordamos alternativas.","Le doy espacio para que identifique qué necesita cambiar y acuerde conmigo cómo avanzar."]},
+  {text:"Debes corregir un comportamiento que se ha repetido varias veces en un colaborador. ¿Cómo actuarías?",opts:["Converso sobre la situación, escucho su perspectiva y acordamos cómo corregirla.","Señalo claramente el comportamiento que debe cambiar, la expectativa y las consecuencias de mantenerlo.","Le pido que proponga cómo puede corregirlo y acordamos revisar los resultados.","Analizo con él por qué está ocurriendo, explico el impacto y trabajamos alternativas para modificarlo."]},
+  {text:"Tienes un equipo que funciona bien, cumple resultados y demuestra experiencia. ¿Cuál sería tu tendencia?",opts:["Involucrarlos en decisiones y escuchar sus propuestas para seguir fortaleciendo el equipo.","Darles mayor autonomía y concentrarme principalmente en los resultados.","Mantener controles frecuentes para asegurar que los buenos resultados continúen.","Seguir acompañando de cerca para asegurar que continúen desarrollándose."]},
+  {text:"Un colaborador está aprendiendo una tarea y comete varios errores propios del proceso de aprendizaje. ¿Qué harías?",opts:["Le explico nuevamente el procedimiento y establezco una supervisión más cercana.","Le pregunto qué está encontrando difícil, revisamos juntos sus errores y definimos cómo seguir practicando.","Escucho cómo está viviendo el proceso, revisamos sus dudas y construimos juntos una estrategia para mejorar.","Le doy confianza para continuar y le permito encontrar su propia manera de resolver las dificultades."]},
+  {text:"Tu equipo identifica una oportunidad para mejorar un proceso que lleva mucho tiempo funcionando igual. ¿Qué haces?",opts:["Facilito que el equipo participe en el análisis, contraste alternativas y llegue a una propuesta.","Les pido que desarrollen la propuesta y asuman la responsabilidad de llevarla adelante.","Defino los criterios que debe cumplir la mejora y establezco responsables y fechas.","Escucho la propuesta, analizo con ellos los posibles riesgos y construimos una forma de probarla."]},
+  {text:"Un colaborador va a asumir un reto nuevo y todavía no tienes claro cuánto apoyo necesitará. ¿Qué harías?",opts:["Converso con él sobre el reto, exploramos qué necesita y acordamos cómo será el acompañamiento.","Le asigno el reto, observo cómo responde y ajusto mi acompañamiento según lo que vaya necesitando.","Le doy autonomía para asumirlo y establezco una revisión principalmente sobre los resultados.","Defino desde el comienzo instrucciones detalladas y controles frecuentes para reducir los riesgos."]}
+];
+
+const PERFILES={
+  D:{name:"Dirección",color:"#E24B4A",tag:"Claridad, estructura y acción directa",sig:"Tu tendencia predominante es dar instrucciones claras, establecer expectativas definidas y hacer seguimiento cercano para asegurar los resultados.",fortaleza:"Actúas con decisión, generas claridad en situaciones de ambigüedad y aseguras que las tareas se ejecuten con los estándares esperados.",riesgo:"Si utilizas demasiado esta tendencia, puedes generar dependencia en el equipo, reducir la iniciativa de los colaboradores y afectar el clima al percibirse como control excesivo.",reto:"Reconocer cuándo una persona ya tiene la capacidad suficiente para actuar con más autonomía y soltar el control progresivamente."},
+  C:{name:"Coaching",color:"#534AB7",tag:"Orientación, acompañamiento y desarrollo",sig:"Tu tendencia predominante es combinar orientación y acompañamiento para ayudar a las personas a desarrollar sus capacidades y alcanzar resultados.",fortaleza:"Sueles explicar, preguntar, dar retroalimentación y acompañar el aprendizaje. Generas confianza y contribuyes al desarrollo de tu equipo.",riesgo:"Si utilizas demasiado esta tendencia, puedes terminar interviniendo más de lo necesario y dificultar que las personas desarrollen autonomía real.",reto:"Reconocer cuándo una persona está lista para actuar con mayor independencia y ceder el acompañamiento a tiempo."},
+  A:{name:"Apoyo / Participación",color:"#1D9E75",tag:"Escucha, participación y construcción colectiva",sig:"Tu tendencia predominante es involucrar al equipo, escuchar diferentes perspectivas y construir soluciones de manera participativa.",fortaleza:"Generas un ambiente de confianza, promueves la participación y aprovechas el conocimiento colectivo para tomar mejores decisiones.",riesgo:"Si utilizas demasiado esta tendencia, puedes demorar decisiones importantes, evitar conflictos necesarios o generar la percepción de falta de dirección.",reto:"Saber cuándo el contexto requiere una decisión rápida y directa, y tomar el liderazgo sin necesidad de consenso."},
+  G:{name:"Delegación",color:"#BA7517",tag:"Autonomía, confianza y responsabilidad",sig:"Tu tendencia predominante es otorgar autonomía, confiar en la capacidad del equipo y concentrarte en los resultados más que en el proceso.",fortaleza:"Empoderas a tu equipo, desarrollas la responsabilidad individual y liberas energía para enfocarte en asuntos estratégicos.",riesgo:"Si utilizas demasiado esta tendencia con personas que aún necesitan acompañamiento, puedes generar inseguridad, errores evitables o sensación de abandono.",reto:"Identificar cuándo una persona o situación requiere más orientación o acompañamiento antes de dar autonomía total."}
+};
+
+const NOMBRES={D:"Dirección",C:"Coaching",A:"Apoyo / Participación",G:"Delegación"};
+const COLORS={D:"#E24B4A",C:"#534AB7",A:"#1D9E75",G:"#BA7517"};
+const LETTERS=["A","B","C","D"];
+
+let cur=0,ans=new Array(20).fill(null),resultCounts=null;
+let shuffled=Qs.map(q=>{
+  const idx=[0,1,2,3].sort(()=>Math.random()-.5);
+  const ol=["A","B","C","D"];
+  return idx.map(i=>({txt:q.opts[i],origKey:ol[i]}));
+});
+
+function startQuiz(){
+  document.getElementById('intro-section').style.display='none';
+  document.getElementById('quiz-section').style.display='block';
+  render();
+}
+
+function render(){
+  const opts=shuffled[cur];
+  document.getElementById('qnum').textContent='Situación '+(cur+1)+' de 20';
+  document.getElementById('qtext').textContent=Qs[cur].text;
+  document.getElementById('qopts').innerHTML=opts.map((o,i)=>
+    `<button class="opt${ans[cur]===i?' sel':''}" onclick="sel(${i},this)"><span class="opt-letter">${LETTERS[i]}.</span>${o.txt}</button>`
+  ).join('');
+  const pct=Math.round((cur/20)*100);
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('plabel').textContent='Pregunta '+(cur+1)+' de 20';
+  document.getElementById('bprev').disabled=cur===0;
+  document.getElementById('bnext').disabled=ans[cur]===null;
+  document.getElementById('bnext').textContent=cur===19?'Siguiente →':'Siguiente →';
+}
+
+function sel(i,el){
+  ans[cur]=i;
+  document.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('bnext').disabled=false;
+}
+
+function prev(){if(cur>0){cur--;render();}}
+
+function next(){
+  if(ans[cur]===null)return;
+  if(cur<19){cur++;render();}
+  else{
+    // calcular resultado y pedir nombre
+    const counts={D:0,C:0,A:0,G:0};
+    ans.forEach((a,i)=>{
+      if(a!==null){const ok=shuffled[i][a].origKey;counts[KEY[i][ok]]++;}
+    });
+    resultCounts=counts;
+    document.getElementById('quiz-section').style.display='none';
+    document.getElementById('nombre-section').style.display='block';
+    document.getElementById('nombre-input').focus();
+  }
+}
+
+function verResultado(){
+  const nombre=document.getElementById('nombre-input').value.trim();
+  if(!nombre){
+    document.getElementById('nombre-input').style.borderColor='#E24B4A';
+    document.getElementById('nombre-input').placeholder='Por favor escribe tu nombre';
+    return;
+  }
+  document.getElementById('nombre-section').style.display='none';
+  showResult(nombre);
+}
+
+// Permitir Enter en el input
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('nombre-input');
+  if(inp) inp.addEventListener('keydown',e=>{if(e.key==='Enter')verResultado();});
+});
+
+function enviarASheets(data){
+  fetch(SHEETS_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(data)
+  }).catch(()=>{});
+}
+
+function showResult(nombre){
+  const counts=resultCounts;
+  const sorted=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  const primary=sorted[0],secondary=sorted[1];
+  const p=PERFILES[primary];
+  const max=Math.max(...Object.values(counts));
+
+  // Enviar a Sheets
+  enviarASheets({
+    nombre:nombre,
+    tendencia:NOMBRES[primary],
+    segundo:NOMBRES[secondary],
+    direccion:counts.D,
+    coaching:counts.C,
+    apoyo:counts.A,
+    delegacion:counts.G
+  });
+
+  const rs=document.getElementById('result-section');
+  rs.style.display='block';
+  const bars=["D","C","A","G"].map(k=>{
+    const pct=max>0?Math.round((counts[k]/max)*100):0;
+    return `<div class="bar-row"><div class="bar-name">${NOMBRES[k]}</div><div class="bar-bg"><div class="bar-fg" style="width:${pct}%;background:${COLORS[k]}"></div></div><div class="bar-val">${counts[k]}</div></div>`;
+  }).join('');
+
+  rs.innerHTML=`<div class="result">
+    <div class="r-header">
+      <div style="font-size:14px;color:#888;margin-bottom:6px">Hola, <strong style="color:#1a1a1a">${nombre}</strong></div>
+      <div class="r-badge">Tendencia predominante</div>
+      <div class="r-name">${p.name}</div>
+      <div class="r-tag">${p.tag}</div>
+    </div>
+    <div class="r-card">
+      <div class="r-card-label">Tus resultados</div>
+      <div class="bars">${bars}</div>
+    </div>
+    <div class="r-card">
+      <div class="r-card-label">¿Qué significa?</div>
+      <div class="r-card-text">${p.sig}</div>
+    </div>
+    <div class="r-card">
+      <div class="r-card-label">Una fortaleza que puedes aprovechar</div>
+      <div class="r-card-text">${p.fortaleza}</div>
+    </div>
+    <div class="r-card">
+      <div class="r-card-label">Cuando puede convertirse en un riesgo</div>
+      <div class="r-card-text">${p.riesgo}</div>
+    </div>
+    <div class="r-card">
+      <div class="r-card-label">Tu reto de liderazgo</div>
+      <div class="r-card-text">${p.reto}</div>
+    </div>
+    <div class="r-card">
+      <div class="r-card-label">Preguntas para reflexionar</div>
+      <div class="qs-reflexion">
+        <div class="q-ref">¿En qué situaciones tiendo a usar demasiado mi tendencia predominante?</div>
+        <div class="q-ref">¿A quién podría darle más autonomía en mi equipo?</div>
+        <div class="q-ref">¿Con quién necesito escuchar más antes de intervenir?</div>
+        <div class="q-ref">¿Qué comportamiento de liderazgo quiero fortalecer?</div>
+      </div>
+    </div>
+    <div class="disclaimer">
+      <p>Este resultado no es una etiqueta ni una evaluación de desempeño. Es una fotografía de tus tendencias frente a diferentes situaciones de liderazgo. Tu segundo estilo más frecuente es <strong>${NOMBRES[secondary]}</strong> — los líderes más efectivos combinan varios estilos según el contexto y las necesidades del equipo.</p>
+    </div>
+    <div class="restart-row">
+      <button class="btn" onclick="restart()">Responder de nuevo</button>
+    </div>
+  </div>`;
+}
+
+function restart(){
+  cur=0;ans=new Array(20).fill(null);resultCounts=null;
+  shuffled=Qs.map(q=>{const idx=[0,1,2,3].sort(()=>Math.random()-.5);const ol=["A","B","C","D"];return idx.map(i=>({txt:q.opts[i],origKey:ol[i]}));});
+  document.getElementById('result-section').style.display='none';
+  document.getElementById('nombre-section').style.display='none';
+  document.getElementById('quiz-section').style.display='block';
+  render();
+}
+</script>
+</body>
+</html>
